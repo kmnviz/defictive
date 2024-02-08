@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  mongo:
+    image: 'mongo:latest'
+    container_name: 'defictive_mongodb'
+    ports: 
+        - 27027:27017
+    volumes:
+      - data:/data/db
+
+volumes:
+  data:

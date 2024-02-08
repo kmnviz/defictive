@@ -1,0 +1,15 @@
+{
+    "networks": [
+        "zkSyncEra"
+    ],
+    "zkSyncEra": {
+        "rpc": [
+            "https://zksync.meowrpc.com",
+            "https://mainnet.era.zksync.io",
+            "https://1rpc.io/zksync2-era"
+        ],
+        "chainId": "324",
+        "currency": "ETH",
+        "gasLimit": 1000000
+    }
+}
