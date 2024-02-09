@@ -27,6 +27,8 @@ const iBasePoolAbi = require('../../contracts/iBasePoolAbi.json');
                 const now = new Date();
                 providers[index].updated_at = now.getTime();
             });
+
+            console.log(`connection with ${url} is established.`);
         } catch (error) {
             console.log(`provider ${providers[index].url} failed. error: `, error);
         }
