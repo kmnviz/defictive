@@ -6,7 +6,14 @@
         "rpc": [
             "https://zksync.meowrpc.com",
             "https://mainnet.era.zksync.io",
-            "https://1rpc.io/zksync2-era"
+            "https://1rpc.io/zksync2-era",
+            "https://zksync.drpc.org",
+            "https://zksync-era.blockpi.network/v1/rpc/public"
+        ],
+        "wss": [
+            "https://zksync.meowrpc.com",
+            "wss://mainnet.era.zksync.io/ws",
+            "wss://zksync-era.blockpi.network/v1/rpc/public"
         ],
         "chainId": "324",
         "currency": "ETH",
