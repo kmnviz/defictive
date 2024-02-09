@@ -39,7 +39,6 @@ const iBasePoolAbi = require('../../contracts/iBasePoolAbi.json');
     }
 
     const thresholdInMinutes = 5;
-    const reconnectDelayInMinutes = 5;
     setInterval(async () => {
         if (providers.every((provider) => provider.updated_at)) {
             const latestProvider = providers.reduce((latest, provider) => {
@@ -51,15 +50,9 @@ const iBasePoolAbi = require('../../contracts/iBasePoolAbi.json');
                 const timeDifferenceInMinutes = timeDifference / (1000 * 60);
 
                 if (timeDifferenceInMinutes >= thresholdInMinutes) {
-                    console.log(`provider ${provider.url} is ${thresholdInMinutes} minutes behind`);
+                    console.log(`provider ${provider.url} is ${thresholdInMinutes} minutes behind. reconnecting`);
                     const providerIndex = providers.findIndex((p) => p.url === provider.url);
-                    providers.splice(providerIndex, 1);
-
-                    console.log(`schedule provider ${provider.url} reconnection after ${reconnectDelayInMinutes} minutes`)
-                    setTimeout(async () => {
-                        console.log(`reconnecting ${provider.url}...`);
-                        await connectAndListen(provider);
-                    }, reconnectDelayInMinutes * 60 * 1000);
+                    await connectAndListen(provider.url, providerIndex);
                 }
             }
         }
