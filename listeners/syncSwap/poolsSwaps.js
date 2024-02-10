@@ -15,10 +15,10 @@ const iBasePoolAbi = require('../../contracts/iBasePoolAbi.json');
     }
 
     const connectAndListen = async (url, index) => {
-        const provider = instantiateProvider(url);
-        const poolMasterContract = new ethers.Contract(addresses.poolMaster, poolMasterAbi, provider);
+        const providerInstance = instantiateProvider(url);
+        const poolMasterContract = new ethers.Contract(addresses.poolMaster, poolMasterAbi, providerInstance);
         const poolAddress = await poolMasterContract.pools(0);
-        const poolContract = new ethers.Contract(poolAddress, iBasePoolAbi, provider);
+        const poolContract = new ethers.Contract(poolAddress, iBasePoolAbi, providerInstance);
         const swapEventFilter = poolContract.filters.Swap(null, null, null, null, null, null);
 
         providers[index].connection++;
