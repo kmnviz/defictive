@@ -1,8 +1,29 @@
 const ethers = require('ethers');
-const networks = require('../../networks.json');
-const addresses = require('../../contracts/syncSwap/addresses.json');
-const poolMasterAbi = require('../../contracts/syncSwap/poolMasterAbi.json');
-const iBasePoolAbi = require('../../contracts/iBasePoolAbi.json');
+const networks = require('../../../networks.json');
+const addresses = require('../../../contracts/syncSwap/addresses.json');
+const poolMasterAbi = require('../../../contracts/syncSwap/poolMasterAbi.json');
+const iBasePoolAbi = require('../../../contracts/iBasePoolAbi.json');
+const initializeKafkaProducer = require('../../../services/kafkaProducer');
+
+const prepareSwapRecord = (event) => {
+    return {
+        id: `${event.log.transactionHash}_${event.log.index}`,
+        application: 'syncSwap',
+        poolAddress: event.emitter.target,
+        network: 'zkSyncEra',
+        transactionHash: event.log.transactionHash,
+        transactionIndex: event.log.transactionIndex,
+        blockHash: event.log.blockHash,
+        blockNumber: event.log.blockNumber,
+        logIndex: event.log.index,
+        sender: event.args[0],
+        amount0In: event.args[1].toString(),
+        amount1In: event.args[2].toString(),
+        amount0Out: event.args[3].toString(),
+        amount1Out: event.args[4].toString(),
+        to: event.args[5],
+    };
+}
 
 (async () => {
     const providers = [];
@@ -14,6 +35,8 @@ const iBasePoolAbi = require('../../contracts/iBasePoolAbi.json');
         return url.startsWith('http') ? new ethers.JsonRpcProvider(url) : new ethers.WebSocketProvider(url);
     }
 
+    const kafkaProducer = await initializeKafkaProducer();
+
     const connectAndListen = async (url, index) => {
         const providerInstance = instantiateProvider(url);
         const poolMasterContract = new ethers.Contract(addresses.poolMaster, poolMasterAbi, providerInstance);
@@ -23,7 +46,13 @@ const iBasePoolAbi = require('../../contracts/iBasePoolAbi.json');
 
         providers[index].connection++;
         try {
-            await poolContract.on(swapEventFilter, (event) => {
+            await poolContract.on(swapEventFilter, async (event) => {
+                const swapRecord = prepareSwapRecord(event);
+                await kafkaProducer.send({
+                    topic: 'swaps',
+                    messages: [{ value: JSON.stringify(swapRecord) }],
+                });
+
                 const now = new Date();
                 providers[index].updated_at = now.getTime();
             });
@@ -57,23 +86,4 @@ const iBasePoolAbi = require('../../contracts/iBasePoolAbi.json');
             }
         }
     }, 10000);
-
-    const prepareSwapRecord = (event) => {
-        return {
-            application: 'syncSwap',
-            poolAddress: event.emitter.target,
-            network: 'zkSyncEra',
-            transactionHash: event.log.transactionHash,
-            transactionIndex: event.log.transactionIndex,
-            blockHash: event.log.blockHash,
-            blockNumber: event.log.blockNumber,
-            logIndex: event.log.index,
-            sender: event.args[0],
-            amount0In: event.args[1].toString(),
-            amount1In: event.args[2].toString(),
-            amount0Out: event.args[3].toString(),
-            amount1Out: event.args[4].toString(),
-            to: event.args[5],
-        };
-    }
 })();

@@ -6,6 +6,8 @@ const kafkaProducer = kafka.producer();
 
 const initializeKafkaProducer = async () => {
     await kafkaProducer.connect();
+    
+    return kafkaProducer;
 }
 
 module.exports = initializeKafkaProducer;
