@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +12,7 @@
     "dotenv": "^16.4.1",
     "ethers": "^6.10.0",
     "kafkajs": "^2.2.4",
+    "migrate-mongo": "^11.0.0",
     "mongodb": "^6.3.0"
   }
 }
