@@ -1,4 +1,5 @@
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
+
 const http = require('http');
 const WebSocket = require('ws');
 
@@ -13,7 +14,7 @@ wss.on('connection', (ws) => {
     console.log('WebSocket connected');
   
     ws.on('message', (message) => {
-      console.log(`Received message from WebSocket client: ${message}`);
+      console.log(`Received message from WebSocket client: `, message);
     });
   
     ws.send('Welcome to the WebSocket server!');
